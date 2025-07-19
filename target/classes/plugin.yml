@@ -1,0 +1,14 @@
+name: MyAdvancedCommands
+version: '1.0-SNAPSHOT'
+main: com.KYRLA_Ktiw.MyAdvancedCommands
+api-version: '1.20'
+author: KYRLA_Ktiw
+description: Мой первый плагин с командой!!
+
+commands:
+  mycommand: # имя нашей команды!
+    description: Моя первая тестовая команда # Комментарий
+    usage: /<command> # говорит что будет работать через команду
+    aliases: [mac, cmd ] # чтобы использовать другие имена для этой команды
+    permission: hello.use # это не обязательно, но дает разрешение на пользование команды
+    permission-message: У вас нет разрешение!
