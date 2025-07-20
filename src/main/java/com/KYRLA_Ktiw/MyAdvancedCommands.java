@@ -35,52 +35,80 @@ public class MyAdvancedCommands extends JavaPlugin implements CommandExecutor, T
             Player player = (Player) sender;
             if (command.getName().equalsIgnoreCase("mycommand")) {
                 player.sendMessage("§aПривет! Ты ввел команду mycommand.");
-                // если агумент пустой
+                // проверяем есть ли аргументы после команды
                 if (args.length > 0) {
                     //получаем первый аргумент
-                    String FirstArg = args[0];
-                    // здесь вводим при каких условиях будет выводится то или иное сообщение
-                    if (FirstArg.equalsIgnoreCase("hello")) {
-                        player.sendMessage(ChatColor.GREEN + "Привет, " + player.getName() + "! Ты ввел аргумент 'hello'.");
-                    } else if (FirstArg.equalsIgnoreCase("info")) {
-                        player.sendMessage(ChatColor.AQUA + "Это плагин MyAdnancedCommands, версия" + getDescription().getVersion() + "!");
+                    String firstArg = args[0];
+                    if (firstArg.equalsIgnoreCase("hello")) {
+                        if (args.length > 1) {
+                            String nameToGreet = args[1];
+                            player.sendMessage(ChatColor.GREEN + "Привет," + nameToGreet + "! Рад тебя видеть!");
+                        } else {
+                            player.sendMessage(ChatColor.GREEN + "Привет," + player.getName() + "! Ты ввел аргумент 'hello'.");
+                        }
+                    } else if (firstArg.equalsIgnoreCase("info")) {
+                        player.sendMessage(ChatColor.AQUA + "это плагин MyAdvancedCommands версия " + getDescription().getVersion() + "!");
+                        // новая команда проверяем есть ли что писать после say
+                    } else if (firstArg.equalsIgnoreCase("say")) {
+                        if (args.length > 1) {
+                            StringBuilder messageBuilder = new StringBuilder(); // для обьеденения строк
+                            for (int i = 1; i < args.length; i++) {
+                                messageBuilder.append(args[i]).append(" ");
+                            } // Преобразуем StringBuilder в стринг и убираем лишний пробел в конце
+                            String fullMessage = messageBuilder.toString().trim();
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "[Эхо] " + fullMessage);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "Что сказать? используйте: " + ChatColor.WHITE + "mycommand say <сообщение>");
+                        }
                     } else {
-                        player.sendMessage(ChatColor.RED + "Пожалуйста введите аргумент!\n например: /mycommand hello");
+                        player.sendMessage(ChatColor.YELLOW + "Неизвестный аргумент: " + firstArg + ". Попробуй 'hello' 'info' или 'say' ");
                     }
                     return true;
+                } else {
+                    player.sendMessage(ChatColor.RED + "Пожалуйста, введите аргумент! например " + ChatColor.WHITE + "/mycommand hello");
                 }
-            } else {
-                // это для консоли
-                sender.sendMessage("§bЭта команда предназначена только для игроков, но ты можешь использовать ее без аргументов!");
             }
-
+        } else {
+            sender.sendMessage(ChatColor.AQUA + "Эта команда предназначена только для игроков.");
         }
         return false;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        // Проверяем, что это наша команда "mycommand".
+        // Эта проверка должна быть только один раз в начале метода.
         if (command.getName().equalsIgnoreCase("mycommand")) {
-            List<String> comletions = new ArrayList<>();
-            // если вводит первый агрумент
+            List<String> completions = new ArrayList<>(); // Используй "completions" вместо "comletions" для единообразия и правильности
+
+            // Если пользователь вводит первый аргумент (например, /mycommand <arg1>)
             if (args.length == 1) {
-                // Мы проверяем начинается ли наше предложение с того что пользователь уже написал
-                // tolowercase делает тоже самое что и equalsIgnoreCase
-                // startsWith проверяет начинается ли одна строка тип проверяет то ли я написал и надо ли идти дальше
+                // Предлагаем "hello", "info", "say"
                 if ("hello".startsWith(args[0].toLowerCase())) {
-                    comletions.add("hello");
+                    completions.add("hello");
                 }
                 if ("info".startsWith(args[0].toLowerCase())) {
-                    comletions.add("info");
+                    completions.add("info");
                 }
-                // если вводит второй аргумент
-//             if (args.length == 2)
+                if ("say".startsWith(args[0].toLowerCase())) {
+                    completions.add("say");
+                }
+            } else if (args.length == 2) { // Если пользователь вводит второй аргумент (например, /mycommand hello <arg2>)
+                if (args[0].equalsIgnoreCase("hello")) {
+                    completions.add("<ник_игрока>");
+                } else if (args[0].equalsIgnoreCase("say")) {
+                    completions.add("<сообщение>");
+                }
             }
-            return comletions;
+            // Возвращаем список предложений. Если список пустой, автодополнение не будет предложено.
+            return completions;
         }
+        // Если команда не "mycommand", или если нет предложений от этого плагина для этой команды,
+        // возвращаем null, чтобы Minecraft мог использовать свои стандартные автодополнения.
         return null;
     }
 }
+
 
 
 
